@@ -36,6 +36,7 @@ class Network(object):
             if f is self.conn:
                 msg, addr = f.recvfrom(32)
                 msg = msg.decode("utf-8")
+                print(f"Received message: {msg}")
                 if len(msg) >= 1:
                     cmd = msg[0]
                     if cmd == "m":  # Message
@@ -49,5 +50,7 @@ class Network(object):
                                 pygame.event.post(pygame.event.Event(self.join_room_event, room_code=room_code))
                             elif msg_type == "s":
                                 pygame.event.post(pygame.event.Event(self.start_event))
+                            elif msg_type == "n":
+                                pygame.event.post(pygame.event.Event(self.next_phrase_event))
                     else:
                         print ("Unexpected: {0}".format(msg))

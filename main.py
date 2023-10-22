@@ -59,19 +59,19 @@ class Game:
         gameExit = False
 
         ghostGap = 500
-        pumpGap = 50
+        pumpGap = 100000
         darkness = 0
-        pumpFlag = True
         reached_end = False
+        
         while not gameExit:
-
+            self.network.check_network()
             if darkness == 0:
-
+                
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
                     if event.type == self.network.next_phrase_event:
-                        self.next_text()
+                        text.next_text()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             return
@@ -110,6 +110,11 @@ class Game:
                 for ghost in finishedGhosts:
                     ghosts.remove(ghost)
 
+                for ghost in ghosts:
+                    self.gameDisplay.blit(ghost.surf, ghost.rect)
+
+                pygame.display.flip()
+
             else:
 
                 for event in pygame.event.get():
@@ -138,17 +143,47 @@ class Game:
             clock.tick(60)
             ghostGap = ghostGap - 1
             pumpGap = pumpGap - 1
-            if ghostGap == 0:
-                ghostGap = 100
-                newGhost = Ghost((0, 250), [False, True, True, False], 10, 0)
-                ghosts.add(newGhost)
+            if ghostGap <= random.randint(1, 500):
+                ghostGap = 500
+                directionValue = random.randint(1, 8)
+                directions = []
+                start = ()
+                if directionValue == 1:
+                    directions = [True, False, False, False]
+                    start = (display_width, random.randint(200,400))
+                elif directionValue == 2:
+                    directions = [False, True, False, False]
+                    start = (0, random.randint(200, 400))
+                elif directionValue == 3:
+                    directions = [False, False, True, False]
+                    start = (random.randint(250, 500), display_height)
+                elif directionValue == 4:
+                    directions = [False, False, False, True]
+                    start = (random.randint(250, 500), 0)
+                elif directionValue == 5:
+                    directions = [True, False, True, False]
+                    start = (display_width, display_height)
+                elif directionValue == 6:
+                    directions = [True, False, False, True]
+                    start= (display_width, 0)
+                elif directionValue == 7:
+                    directions = [False, True, True, False]
+                    start = (0, display_height)
+                else:
+                    directions = [False, True, False, True]
+                    start = (0, 0)
 
-            if darkness == 0 and pumpFlag == True and pumpGap == 0:
-                pumpFlag = False
+                ghosts.add(Ghost(start ,directions, random.randint(1, 10)))
 
-                newPumpkin = Pumpkin((25, 250), 200)
-                pumpkins.add(newPumpkin)
-                darkness = darkness + 1
+            if pumpGap <= random.randint(1, 100000) and darkness == 0:
+                pumpGap = 100000
+                pumpkinsToGrow = random.randint(3, 10)
+                pumpkinSize = random.randint(300, 500)
+
+                for i in range(0, pumpkinsToGrow):
+                    pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
+
+                darkness = pumpkinsToGrow
                 
     def start_game(self):
         self.game_loop()
@@ -173,7 +208,20 @@ class Game:
 
     def join_room_loop(self, code=None):
         if not code:
+            self.network.send(f"c{self.username}")
             self.code = self.code_box.get_value()
+            self.network.send(f"mj{self.code}")
+            loop = True
+            while loop:
+                self.network.check_network()
+                for event in pygame.event.get():
+                    if event.type == self.network.join_room_event:
+                        loop = False
+                        break
+                    elif event.type == self.network.error_event:
+                        self.message_display("Invalid room code")
+                        print("Invalid room code")
+                        return
         else:
             self.network.send(f"ms{self.code}")
         gameExit = False
@@ -182,10 +230,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                if event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         return
-                if event.type == self.network.start_event:
+                elif event.type == self.network.start_event:
                     self.start_game()
                 
             self.gameDisplay.fill(white)
