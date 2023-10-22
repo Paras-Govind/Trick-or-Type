@@ -167,6 +167,9 @@ class Game:
                 for ghost in ghosts:
                     self.gameDisplay.blit(ghost.surf, ghost.rect)
 
+                for ouija in ouiji:
+                    self.gameDisplay.blit(ouija.surf, ouija.rect)
+
                 pygame.display.flip()
 
             else:
@@ -199,6 +202,7 @@ class Game:
                 gameDisplay.blit(scare,(0,0))
             pygame.display.update()
             clock.tick(60)
+
             if darkness == 0:
                 ghostGap = ghostGap - 1
                 pumpGap = pumpGap - 1
@@ -243,6 +247,10 @@ class Game:
                     pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
 
                 darkness = pumpkinsToGrow
+
+            if text.text_index == 3:
+                ouijiCurse = True
+                ouiji.add(Ouija(((display_width / 2) - 300, display_height - 550)))
                 
     def start_game(self):
         self.game_loop()
