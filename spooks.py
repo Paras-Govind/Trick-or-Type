@@ -1,13 +1,17 @@
 import pygame
 
+background_color = "#3F3F3F"
+
 class Ghost(pygame.sprite.Sprite):
     def __init__(self, start, directions, speed, zoomRate):
         size = 150
         super(Ghost, self).__init__()
         image = pygame.image.load("assets/ghost.png").convert_alpha()
-        transparency = 128
+        transparency = 200
         image.fill((255, 255, 255, transparency), special_flags=pygame.BLEND_RGBA_MULT)
         self.surf = pygame.transform.scale(image, (size, size))
+        self.replace_surf = pygame.Surface((size, size))
+        self.replace_surf.fill(background_color)
         self.rect = self.surf.get_rect()
         self.rect.move_ip(start)
 
@@ -31,7 +35,6 @@ class Ghost(pygame.sprite.Sprite):
         if (self.rect.left > SCREEN_WIDTH) or (self.rect.right < 0) or (self.rect.top > SCREEN_HEIGHT) or (self.rect.bottom < 0):
             ghostOff = True
 
-        screen.blit(self.surf, self.rect)   
         return ghostOff
 
 class Pumpkin(pygame.sprite.Sprite):

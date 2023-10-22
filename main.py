@@ -1,6 +1,7 @@
 import pygame
 import pygame_menu
 import pygame.freetype
+import random
 
 from common import *
 from text import Text
@@ -12,13 +13,15 @@ pygame.display.set_caption('Trick or Type')
 
 ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
+pygame.display.set_mode((pygame.display.get_window_size()[0], pygame.display.get_window_size()[1]), pygame.RESIZABLE|pygame.DOUBLEBUF)
+
 
 
 def game_loop():
     text = Text(gameDisplay, ['This', 'This is another longer sentence'])
     gameExit = False
 
-    ghostGap = 100
+    ghostGap = 500
     pumpGap = 50
     darkness = 0
     pumpFlag = True
@@ -50,16 +53,20 @@ def game_loop():
                 i += metric[Text.M_ADV_X]
             
             gameDisplay.blit(text.text_surf, text.text_surf_rect)
-            pygame.display.flip()
+
 
             finishedGhosts = []
 
             for ghost in ghosts:
                 if ghost.update(pygame.display.get_window_size()[0],pygame.display.get_window_size()[1],gameDisplay) == True:
                     finishedGhosts.append(ghost)
+                else:
+                    gameDisplay.blit(ghost.surf, ghost.rect)
 
             for ghost in finishedGhosts:
                 ghosts.remove(ghost)
+
+            pygame.display.flip()
 
         else:
 
@@ -89,17 +96,45 @@ def game_loop():
         clock.tick(60)
         ghostGap = ghostGap - 1
         pumpGap = pumpGap - 1
-        if ghostGap == 0:
-            ghostGap = 100
-            newGhost = Ghost((0, 250), [False, True, True, False], 10, 0)
+        if random.randint(1, 500) >= ghostGap:
+            ghostGap = 500
+            ghostDirection = random.randrange(1, 9)
+            direction = []
+            start = ()
+            if ghostDirection == 1:
+                direction = [True, False, False, False]
+                start = (pygame.display.get_window_size()[0], random.randint(100, 400))
+            elif ghostDirection == 2:
+                direction = [False, True, False, False]
+                start = (-149, random.randint(100, 400))
+            elif ghostDirection == 3:
+                direction = [False, False, True, False]
+                start = (random.randint(250, 450), pygame.display.get_window_size()[1])
+            elif ghostDirection == 4:
+                direction = [False, False, False, True]
+                start = (random.randint(250, 450), -149)
+            elif ghostDirection == 5:
+                direction = [True, False, True, False]
+                start = (pygame.display.get_window_size()[0], pygame.display.get_window_size()[1])
+            elif ghostDirection == 6:
+                direction = [True, False, False, True]
+                start = (pygame.display.get_window_size()[0], -149)
+            elif ghostDirection == 7:
+                direction = [False, True, True, False]
+                start = (-149, pygame.display.get_window_size()[1])
+            elif ghostDirection == 8:
+                direction = [False, True, False, True]
+                start = (-149, -149)
+
+            newGhost = Ghost(start, direction, random.randint(2, 10), 0)
             ghosts.add(newGhost)
 
-        if darkness == 0 and pumpFlag == True and pumpGap == 0:
-            pumpFlag = False
+        # if darkness == 0 and pumpFlag == True and pumpGap == 0:
+        #     pumpFlag = False
 
-            newPumpkin = Pumpkin((25, 250), 200)
-            pumpkins.add(newPumpkin)
-            darkness = darkness + 1
+        #     newPumpkin = Pumpkin((25, 250), 200)
+        #     pumpkins.add(newPumpkin)
+        #     darkness = darkness + 1
 
         
 menu = pygame_menu.Menu(width=display_width, height=display_height,
