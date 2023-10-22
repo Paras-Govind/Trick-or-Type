@@ -229,6 +229,7 @@ class Game:
             self.network.check_network()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.network.send(f"l{self.code}")
                     return
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -245,4 +246,5 @@ if __name__ == "__main__":
     game = Game()
     game.menu.mainloop(game.gameDisplay)
     pygame.quit()
+    game.network.send("d")
     quit()

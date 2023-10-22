@@ -19,10 +19,12 @@ class Network(object):
         self.create_room_event = pygame.USEREVENT + 1
         self.join_room_event = pygame.USEREVENT + 2
         self.start_event = pygame.USEREVENT + 3
-        
         self.next_phrase_event = pygame.USEREVENT + 4
-        self.finish_event = pygame.USEREVENT + 5
-        self.error_event = pygame.USEREVENT + 6
+        self.error_event = pygame.USEREVENT + 5
+        
+        self.win_event = pygame.USEREVENT + 6
+        self.lose_event = pygame.USEREVENT + 7
+        
         
     def send(self, message):
         print(f"Sending message: {message}")
@@ -52,5 +54,9 @@ class Network(object):
                                 pygame.event.post(pygame.event.Event(self.start_event))
                             elif msg_type == "n":
                                 pygame.event.post(pygame.event.Event(self.next_phrase_event))
+                            elif msg_type == "w":
+                                pygame.event.post(pygame.event.Event(self.win_event))
+                            elif msg_type == "l":
+                                pygame.event.post(pygame.event.Event(self.lose_event))
                     else:
                         print ("Unexpected: {0}".format(msg))
