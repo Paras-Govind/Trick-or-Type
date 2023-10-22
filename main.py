@@ -62,14 +62,14 @@ class Game:
         pumpFlag = True
         
         while not gameExit:
-
+            self.network.check_network()
             if darkness == 0:
-
+                
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
                     if event.type == self.network.next_phrase_event:
-                        self.next_text()
+                        text.next_text()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             return
@@ -166,7 +166,20 @@ class Game:
 
     def join_room_loop(self, code=None):
         if not code:
+            self.network.send(f"c{self.username}")
             self.code = self.code_box.get_value()
+            self.network.send(f"mj{self.code}")
+            loop = True
+            while loop:
+                self.network.check_network()
+                for event in pygame.event.get():
+                    if event.type == self.network.join_room_event:
+                        loop = False
+                        break
+                    elif event.type == self.network.error_event:
+                        self.message_display("Invalid room code")
+                        print("Invalid room code")
+                        return
         else:
             self.network.send(f"ms{self.code}")
         gameExit = False
@@ -175,10 +188,10 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                if event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         return
-                if event.type == self.network.start_event:
+                elif event.type == self.network.start_event:
                     self.start_game()
                 
             self.gameDisplay.fill(white)
