@@ -3,6 +3,7 @@ import pygame_menu
 import pygame.freetype
 import pygame.event
 import random
+import time
 from pygame import mixer 
 from networking import Network
 
@@ -113,9 +114,12 @@ class Game:
                     self.gameDisplay.blit(ghost.surf, ghost.rect)
                     
                 if reached_end:
+                    time.sleep(2)
                     pygame.mixer.Channel(0).stop()
                     pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
                     gameDisplay.blit(scare,(0,0))
+                    gameExit = True
+                    
 
                 pygame.display.flip()
 
@@ -244,6 +248,7 @@ class Game:
                     pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
 
                 darkness = pumpkinsToGrow
+        
                 
     def start_game(self):
         self.game_loop()

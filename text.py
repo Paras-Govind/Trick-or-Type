@@ -46,6 +46,7 @@ class Text:
         self.text_index += 1
         if self.text_index >= len(self.texts):
             self.text_index = 0
+            self.network.send('mf')
             return True
         self.update_stuff()
         return False
