@@ -6,14 +6,14 @@ import random
 from pygame import mixer 
 from networking import Network
 
+mixer.pre_init()
+mixer.init()
+
 from common import *
 from text import Text, request_text
 from spooks import *
 
-mixer.init()
-mixer.music.load("assets/audio/music.mp3")
-mixer.music.set_volume(0.7) 
-mixer.music.play() 
+pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/music.mp3"))
 
 background_color = "#3F3F3F"
 
@@ -23,6 +23,10 @@ ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
 ouiji = pygame.sprite.Group()
 pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE|pygame.DOUBLEBUF)
+
+scare = pygame.image.load("assets/images/jumpscare.jpg")
+scare = pygame.transform.scale(scare, (display_width, display_height))
+
 
 class Game:
     def __init__(self) -> None:
@@ -61,6 +65,7 @@ class Game:
         ouijiCurse = False
         cursedLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
+        reached_end = False
         
         while not gameExit:
             self.network.check_network()
@@ -147,7 +152,12 @@ class Game:
                     i += metric[Text.M_ADV_X]
                 
                 self.gameDisplay.blit(text.text_surf, text.text_surf_rect)
+                
+                if reached_end:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/audio/music.mp3"))
+                    gameDisplay.blit(scare,(0,0))
 
+                pygame.display.update()
 
                 finishedGhosts = []
 
