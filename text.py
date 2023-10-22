@@ -1,17 +1,17 @@
 import pygame
-
+from pygame import mixer
 
 def request_text():
     return [
     "On a chilling Halloween night beneath the eerie",
-    "moonlight friends gathered by a wickedly grinning",
-    "pumpkin. They exchanged terrifying tales of ghosts",
-    "sending shivers down their spines. Suddenly a rustle",
-    "in the bushes made them jump. But it was not a",
-    "ghost it was their mischievous zombie friend clad",
-    "in tattered clothes. The night was filled with",
-    "laughter scares and the warmth of pumpkin-spiced",
-    "treats as they celebrated Halloween in all its scary glory."
+    # "moonlight friends gathered by a wickedly grinning",
+    # "pumpkin. They exchanged terrifying tales of ghosts",
+    # "sending shivers down their spines. Suddenly a rustle",
+    # "in the bushes made them jump. But it was not a",
+    # "ghost it was their mischievous zombie friend clad",
+    # "in tattered clothes. The night was filled with",
+    # "laughter scares and the warmth of pumpkin-spiced",
+    # "treats as they celebrated Halloween in all its scary glory."
 ]
 
 
@@ -42,6 +42,9 @@ class Text:
     def next_text(self) -> None:
         self.text_index += 1
         if self.text_index >= len(self.texts):
+            mixer.music.load("assets/audio/scream.mp3")
+            mixer.music.set_volume(2)
+            mixer.music.play() 
             self.text_index = 0
 
         self.update_stuff()

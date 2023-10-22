@@ -3,10 +3,16 @@ import pygame_menu
 import pygame.freetype
 import pygame.event
 import random
+from pygame import mixer 
 
 from common import *
 from text import Text, request_text
 from spooks import *
+
+mixer.init()
+mixer.music.load("assets/audio/music.mp3")
+mixer.music.set_volume(0.7) 
+mixer.music.play() 
 
 background_color = "#3F3F3F"
 
