@@ -80,7 +80,7 @@ class Game:
                         if event.key == pygame.K_ESCAPE:
                             return
                         if event.unicode == text.current_letter():
-                            text.next_letter()
+                            reached_end = text.next_letter()
         
                 self.gameDisplay.fill(background_color)
                 text.text_surf.fill(background_color)
@@ -152,11 +152,6 @@ class Game:
                     i += metric[Text.M_ADV_X]
                 
                 self.gameDisplay.blit(text.text_surf, text.text_surf_rect)
-                
-                if reached_end:
-                    pygame.mixer.Channel(0).stop()
-                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
-                    gameDisplay.blit(scare,(0,0))
 
                 pygame.display.update()
 
@@ -197,7 +192,11 @@ class Game:
 
                 for pumpkin in pumpkins:
                     self.gameDisplay.blit(pumpkin.surf, pumpkin.rect)
-
+            
+            if reached_end:
+                pygame.mixer.Channel(0).stop()
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
+                gameDisplay.blit(scare,(0,0))
             pygame.display.update()
             clock.tick(60)
             if darkness == 0:
