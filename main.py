@@ -155,7 +155,7 @@ class Game:
                     return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        return
+                        self.game_loop()
             for event in pygame.event.get():
                 # if event.type == server.EVENTTYPE: @ALEX
                 pass
