@@ -2,6 +2,7 @@ import pygame
 import pygame_menu
 import pygame.freetype
 import pygame.event
+import random
 
 from common import *
 from text import Text, request_text
@@ -13,6 +14,8 @@ pygame.display.set_caption('Trick or Type')
 
 ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
+pygame.display.set_mode((pygame.display.get_window_size()[0], pygame.display.get_window_size()[1]), pygame.RESIZABLE|pygame.DOUBLEBUF)
+
 
 
 class Game:
@@ -45,7 +48,7 @@ class Game:
         text = Text(self.gameDisplay, request_text())
         gameExit = False
 
-        ghostGap = 100
+        ghostGap = 500
         pumpGap = 50
         darkness = 0
         pumpFlag = True
