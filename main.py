@@ -13,7 +13,7 @@ pygame.display.set_caption('Trick or Type')
 
 ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
-pygame.display.set_mode((pygame.display.get_window_size()[0], pygame.display.get_window_size()[1]), pygame.RESIZABLE|pygame.DOUBLEBUF)
+pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE|pygame.DOUBLEBUF)
 
 
 code = ""
@@ -24,9 +24,8 @@ def game_loop(code: str):
     gameExit = False
 
     ghostGap = 500
-    pumpGap = 50
+    pumpGap = 100000
     darkness = 0
-    pumpFlag = True
     
     while not gameExit:
 
@@ -60,7 +59,7 @@ def game_loop(code: str):
             finishedGhosts = []
 
             for ghost in ghosts:
-                if ghost.update(pygame.display.get_window_size()[0],pygame.display.get_window_size()[1],gameDisplay) == True:
+                if ghost.update(display_width,display_height,gameDisplay) == True:
                     finishedGhosts.append(ghost)
                 else:
                     gameDisplay.blit(ghost.surf, ghost.rect)
@@ -97,7 +96,6 @@ def game_loop(code: str):
         pygame.display.update()
         clock.tick(60)
         ghostGap = ghostGap - 1
-        pumpGap = pumpGap - 1
         if random.randint(1, 500) >= ghostGap:
             ghostGap = 500
             ghostDirection = random.randrange(1, 9)
@@ -105,25 +103,25 @@ def game_loop(code: str):
             start = ()
             if ghostDirection == 1:
                 direction = [True, False, False, False]
-                start = (pygame.display.get_window_size()[0], random.randint(100, 400))
+                start = (display_width, random.randint(100, 400))
             elif ghostDirection == 2:
                 direction = [False, True, False, False]
                 start = (-149, random.randint(100, 400))
             elif ghostDirection == 3:
                 direction = [False, False, True, False]
-                start = (random.randint(250, 450), pygame.display.get_window_size()[1])
+                start = (random.randint(250, 450), display_height)
             elif ghostDirection == 4:
                 direction = [False, False, False, True]
                 start = (random.randint(250, 450), -149)
             elif ghostDirection == 5:
                 direction = [True, False, True, False]
-                start = (pygame.display.get_window_size()[0], pygame.display.get_window_size()[1])
+                start = (display_width, display_height)
             elif ghostDirection == 6:
                 direction = [True, False, False, True]
-                start = (pygame.display.get_window_size()[0], -149)
+                start = (display_width, -149)
             elif ghostDirection == 7:
                 direction = [False, True, True, False]
-                start = (-149, pygame.display.get_window_size()[1])
+                start = (-149, display_height)
             elif ghostDirection == 8:
                 direction = [False, True, False, True]
                 start = (-149, -149)
@@ -131,13 +129,20 @@ def game_loop(code: str):
             newGhost = Ghost(start, direction, random.randint(2, 10), 0)
             ghosts.add(newGhost)
 
-        # if darkness == 0 and pumpFlag == True and pumpGap == 0:
-        #     pumpFlag = False
+        if darkness == 0:
+            pumpGap = pumpGap - 1
+            if random.randint(1, 100000) >= pumpGap:
+                pumpGap = 100000
 
-        #     newPumpkin = Pumpkin((25, 250), 200)
-        #     pumpkins.add(newPumpkin)
-        #     darkness = darkness + 1
+                pumpkinsToGrow = random.randint(3, 8)
+                darkness = pumpkinsToGrow
 
+                for i in range(0, pumpkinsToGrow):
+                    size = random.randint(300, 500)
+                    position = (random.randint(0, display_width - size), random.randint(0, display_height - size))
+
+                    newPumpkin = Pumpkin(position, size)
+                    pumpkins.add(newPumpkin)
             
 menu = pygame_menu.Menu(width=display_width, height=display_height,
                     theme=pygame_menu.themes.THEME_DARK,
