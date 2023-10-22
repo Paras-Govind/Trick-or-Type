@@ -1,17 +1,17 @@
 import pygame
-
+from pygame import mixer
 
 def request_text():
     return [
     "On a chilling Halloween night beneath the eerie",
-    "moonlight friends gathered by a wickedly grinning",
-    "pumpkin. They exchanged terrifying tales of ghosts",
-    "sending shivers down their spines. Suddenly a rustle",
-    "in the bushes made them jump. But it was not a",
-    "ghost it was their mischievous zombie friend clad",
-    "in tattered clothes. The night was filled with",
-    "laughter scares and the warmth of pumpkin-spiced",
-    "treats as they celebrated Halloween in all its scary glory."
+    # "moonlight friends gathered by a wickedly grinning",
+    # "pumpkin. They exchanged terrifying tales of ghosts",
+    # "sending shivers down their spines. Suddenly a rustle",
+    # "in the bushes made them jump. But it was not a",
+    # "ghost it was their mischievous zombie friend clad",
+    # "in tattered clothes. The night was filled with",
+    # "laughter scares and the warmth of pumpkin-spiced",
+    # "treats as they celebrated Halloween in all its scary glory."
 ]
 
 
@@ -21,11 +21,13 @@ class Text:
     font_height = font.get_sized_height()
     M_ADV_X = 4
 
-    def __init__(self, gameDisplay: pygame.Surface, text: [str]) -> None:
+    def __init__(self, gameDisplay: pygame.Surface, text: [str], network, room_code) -> None:
         self.gameDisplay = gameDisplay
         self.texts = text
         self.letter_index = 0
         self.text_index = 0
+        self.network = network
+        self.room_code = room_code
 
         self.update_stuff()
 
@@ -40,10 +42,13 @@ class Text:
         return self.texts[self.text_index]
 
     def next_text(self) -> None:
+        self.letter_index = 0
         self.text_index += 1
         if self.text_index >= len(self.texts):
+            mixer.music.load("assets/audio/scream.mp3")
+            mixer.music.set_volume(2)
+            mixer.music.play() 
             self.text_index = 0
-
         self.update_stuff()
 
     def current_letter(self) -> None:
@@ -52,5 +57,5 @@ class Text:
     def next_letter(self) -> None:
         self.letter_index += 1
         if self.letter_index >= len(self.current_text()):
-            self.letter_index = 0
+            self.network.send(f"mn{self.room_code}")
             self.next_text()
