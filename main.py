@@ -152,10 +152,6 @@ class Game:
                     i += metric[Text.M_ADV_X]
                 
                 self.gameDisplay.blit(text.text_surf, text.text_surf_rect)
-                
-                if reached_end:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/audio/music.mp3"))
-                    gameDisplay.blit(scare,(0,0))
 
                 pygame.display.update()
 
@@ -196,7 +192,11 @@ class Game:
 
                 for pumpkin in pumpkins:
                     self.gameDisplay.blit(pumpkin.surf, pumpkin.rect)
-
+            
+            if reached_end:
+                pygame.mixer.Channel(0).stop()
+                pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
+                gameDisplay.blit(scare,(0,0))
             pygame.display.update()
             clock.tick(60)
             if darkness == 0:
@@ -288,6 +288,7 @@ class Game:
             self.network.check_network()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.network.send(f"l{self.code}")
                     return
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -304,4 +305,5 @@ if __name__ == "__main__":
     game = Game()
     game.menu.mainloop(game.gameDisplay)
     pygame.quit()
+    game.network.send("d")
     quit()

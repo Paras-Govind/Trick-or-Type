@@ -67,6 +67,18 @@ class GameServer(object):
                                             if player != addr:
                                                 self.send(f"mn", player)
                                                 print(f"Sent mn")
+                                    elif msg_type == "f" and addr in self.clients:
+                                        room_code = int(msg[2:])
+                                        for player in self.rooms[room_code]:
+                                            if player != addr:
+                                                self.send(f"ml", player)
+                                                print(f"Sent ml")
+                                            else:
+                                                self.send(f"mw", player)
+                                                print(f"Sent mw")
+                            elif cmd == "l":
+                                room_code = int(msg[2:])
+                                self.rooms[room_code].remove(addr)
                             elif cmd == "d":  # Player Quitting
                                 if addr in self.clients:
                                     del self.clients[addr]
