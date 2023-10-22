@@ -21,11 +21,13 @@ class Text:
     font_height = font.get_sized_height()
     M_ADV_X = 4
 
-    def __init__(self, gameDisplay: pygame.Surface, text: [str]) -> None:
+    def __init__(self, gameDisplay: pygame.Surface, text: [str], network, room_code) -> None:
         self.gameDisplay = gameDisplay
         self.texts = text
         self.letter_index = 0
         self.text_index = 0
+        self.network = network
+        self.room_code = room_code
 
         self.update_stuff()
 
@@ -40,10 +42,10 @@ class Text:
         return self.texts[self.text_index]
 
     def next_text(self) -> None:
+        self.letter_index = 0
         self.text_index += 1
         if self.text_index >= len(self.texts):
             self.text_index = 0
-
         self.update_stuff()
 
     def current_letter(self) -> None:
@@ -52,5 +54,5 @@ class Text:
     def next_letter(self) -> None:
         self.letter_index += 1
         if self.letter_index >= len(self.current_text()):
-            self.letter_index = 0
+            self.network.send(f"mn{self.room_code}")
             self.next_text()

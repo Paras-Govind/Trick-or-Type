@@ -2,7 +2,7 @@ import pygame
 import pygame_menu
 import pygame.freetype
 import pygame.event
-import random
+from networking import Network
 
 from common import *
 from text import Text, request_text
@@ -37,6 +37,7 @@ class Game:
         self.menu.add.button("Join room", self.join_room_loop)
         self.menu.add.button("Quit", pygame_menu.events.EXIT)
         self.menu.center_content()
+        self.network = Network()
         
     def message_display(self, text):
         largeText = pygame.font.Font("assets/fonts/griffy.ttf", 100)
@@ -45,7 +46,7 @@ class Game:
         self.gameDisplay.blit(TextSurf, TextRect)
         
     def game_loop(self):
-        text = Text(self.gameDisplay, request_text())
+        text = Text(self.gameDisplay, request_text(), self.network, self.code)
         gameExit = False
 
         ghostGap = 500
@@ -60,6 +61,8 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
+                    if event.type == self.network.next_phrase_event:
+                        self.next_text()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             return
@@ -134,31 +137,43 @@ class Game:
                 darkness = darkness + 1
                 
     def start_game(self):
-        # ping server
         self.game_loop()
+        
     def create_room_loop(self):
-        self.code = "12345"
+        self.username = self.username_box.get_value()
+        self.network.send(f"c{self.username}")  
+        self.network.send(f"mc")
+        loop = True
+        while loop:
+            self.network.check_network()
+            for event in pygame.event.get():
+                if event.type == self.network.create_room_event:
+                    self.code = event.room_code
+                    loop = False
+                    break
         
-        # do something with code
-        
-        self.create_room_menu.add.label("Room code: " + self.code)
-        self.create_room_menu.add.button("Start", self.join_room_loop)
+        self.create_room_menu.add.label(f"Room code: {self.code}")
+        self.create_room_menu.add.button("Start", self.join_room_loop, self.code)
         self.create_room_menu.add.button("Quit", pygame_menu.events.EXIT)
         self.create_room_menu.mainloop(self.gameDisplay)
 
-    def join_room_loop(self):
-        self.code = self.code_box.get_value()
+    def join_room_loop(self, code=None):
+        if not code:
+            self.code = self.code_box.get_value()
+        else:
+            self.network.send(f"ms{self.code}")
         gameExit = False
         while not gameExit:
+            self.network.check_network()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         return
-            for event in pygame.event.get():
-                # if event.type == server.EVENTTYPE: @ALEX
-                pass
+                if event.type == self.network.start_event:
+                    self.start_game()
+                
             self.gameDisplay.fill(white)
             self.message_display(f"Room code: {self.code}. Waiting for host...")
             pygame.display.update()
