@@ -69,7 +69,7 @@ class Game:
         cursedLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
         reached_end = False
-        
+        won = False
         while not gameExit:
             self.network.check_network()
             if darkness == 0 and ouijiCurse == False:
@@ -77,14 +77,22 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
-                    if event.type == self.network.next_phrase_event:
+                    elif event.type == self.network.win_event:
+                        won = True
+                        gameExit = True
+                        break
+                    elif  event.type == self.network.lose_event:
+                        gameExit = True
+                        break
+                    elif event.type == self.network.next_phrase_event:
                         text.next_text()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             return
                         if event.unicode.lower() == text.current_letter():
                             reached_end = text.next_letter()
-        
+                if gameExit:
+                    break
                 self.gameDisplay.fill(background_color)
                 text.text_surf.fill(background_color)
                 
@@ -115,12 +123,6 @@ class Game:
                 for ghost in ghosts:
                     self.gameDisplay.blit(ghost.surf, ghost.rect)
                     
-                if reached_end:
-                    time.sleep(2)
-                    pygame.mixer.Channel(0).stop()
-                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
-                    gameDisplay.blit(scare,(0,0))
-                    gameExit = True
                     
 
                 pygame.display.flip()
@@ -278,6 +280,20 @@ class Game:
                         ouijaGap = 500000
                         ouijiCurse = not ouijiCurse
 
+    
+        
+        self.gameDisplay.fill(white)
+        if not won:
+            time.sleep(2)
+            pygame.mixer.Channel(0).stop()
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
+            gameDisplay.blit(scare,(0,0))
+            time.sleep(4)
+        self.gameDisplay.fill(white)
+        self.message_display(f"{'You Won!' if won else 'You Lost!'}")
+        pygame.display.update()
+        time.sleep(4)
+        return
                 
     def start_game(self):
         self.game_loop()
@@ -330,6 +346,7 @@ class Game:
                         return
                 elif event.type == self.network.start_event:
                     self.start_game()
+                    return
                 
             self.gameDisplay.fill(white)
             self.message_display(f"Room code: {self.code}. Waiting for host...")
