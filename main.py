@@ -63,14 +63,16 @@ class Game:
         ghostGap = 500
         pumpGap = 100000
         darkness = 0
+        addedBoard = False
         ouijiCurse = False
+        ouijaGap = 500000
         cursedLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
         reached_end = False
         
         while not gameExit:
             self.network.check_network()
-            if darkness == 0:
+            if darkness == 0 and ouijiCurse == False:
                 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -136,14 +138,14 @@ class Game:
                         if event.unicode in cursedLetters:
                             pass
                         elif event.unicode == text.current_letter():
-                            text.next_letter()
+                            reached_end = text.next_letter()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         mousePos = pygame.mouse.get_pos()
 
                         for ouija in ouiji:
                             result = ouija.checkInput(mousePos)
                             if result == text.current_letter():
-                                text.next_letter()
+                                reached_end = text.next_letter()
 
                 self.gameDisplay.fill(background_color)
                 text.text_surf.fill(background_color)
@@ -162,8 +164,6 @@ class Game:
                 
                 self.gameDisplay.blit(text.text_surf, text.text_surf_rect)
 
-                pygame.display.update()
-
                 finishedGhosts = []
 
                 for ghost in ghosts:
@@ -178,6 +178,15 @@ class Game:
 
                 for ouija in ouiji:
                     self.gameDisplay.blit(ouija.surf, ouija.rect)
+
+                pygame.display.flip()
+
+                if reached_end:
+                    time.sleep(2)
+                    pygame.mixer.Channel(0).stop()
+                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
+                    gameDisplay.blit(scare,(0,0))
+                    gameExit = True
 
                 pygame.display.flip()
 
@@ -208,54 +217,67 @@ class Game:
             pygame.display.update()
             clock.tick(60)
 
-            if darkness == 0:
-                ghostGap = ghostGap - 1
-                pumpGap = pumpGap - 1
-            if ghostGap <= random.randint(1, 500) and darkness == 0:
-                ghostGap = 500
-                directionValue = random.randint(1, 8)
-                directions = []
-                start = ()
-                if directionValue == 1:
-                    directions = [True, False, False, False]
-                    start = (display_width, random.randint(200,400))
-                elif directionValue == 2:
-                    directions = [False, True, False, False]
-                    start = (0, random.randint(200, 400))
-                elif directionValue == 3:
-                    directions = [False, False, True, False]
-                    start = (random.randint(250, 500), display_height)
-                elif directionValue == 4:
-                    directions = [False, False, False, True]
-                    start = (random.randint(250, 500), 0)
-                elif directionValue == 5:
-                    directions = [True, False, True, False]
-                    start = (display_width, display_height)
-                elif directionValue == 6:
-                    directions = [True, False, False, True]
-                    start= (display_width, 0)
-                elif directionValue == 7:
-                    directions = [False, True, True, False]
-                    start = (0, display_height)
-                else:
-                    directions = [False, True, False, True]
-                    start = (0, 0)
+            if text.text_index > 0:
+                if darkness == 0:
+                    ghostGap = ghostGap - 1
+                    pumpGap = pumpGap - 1
+                    ouijaGap = ouijaGap - 1
+                if text.text_index == 1 or text.text_index == 4:
+                    if ghostGap <= random.randint(1, 500) and darkness == 0:
+                        ghostGap = 500
+                        directionValue = random.randint(1, 8)
+                        directions = []
+                        start = ()
+                        if directionValue == 1:
+                            directions = [True, False, False, False]
+                            start = (display_width, random.randint(200,400))
+                        elif directionValue == 2:
+                            directions = [False, True, False, False]
+                            start = (0, random.randint(200, 400))
+                        elif directionValue == 3:
+                            directions = [False, False, True, False]
+                            start = (random.randint(250, 500), display_height)
+                        elif directionValue == 4:
+                            directions = [False, False, False, True]
+                            start = (random.randint(250, 500), 0)
+                        elif directionValue == 5:
+                            directions = [True, False, True, False]
+                            start = (display_width, display_height)
+                        elif directionValue == 6:
+                            directions = [True, False, False, True]
+                            start= (display_width, 0)
+                        elif directionValue == 7:
+                            directions = [False, True, True, False]
+                            start = (0, display_height)
+                        else:
+                            directions = [False, True, False, True]
+                            start = (0, 0)
 
-                ghosts.add(Ghost(start ,directions, random.randint(1, 10)))
+                        ghosts.add(Ghost(start ,directions, random.randint(1, 10)))
+                if text.text_index == 2 or text.text_index == 4:
+                    if pumpGap <= random.randint(1, 100000) and darkness == 0:
+                        pumpGap = 100000
+                        pumpkinsToGrow = random.randint(3, 10)
+                        pumpkinSize = random.randint(300, 500)
 
-            if pumpGap <= random.randint(1, 100000) and darkness == 0:
-                pumpGap = 100000
-                pumpkinsToGrow = random.randint(3, 10)
-                pumpkinSize = random.randint(300, 500)
+                        for i in range(0, pumpkinsToGrow):
+                            pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
 
-                for i in range(0, pumpkinsToGrow):
-                    pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
+                        darkness = pumpkinsToGrow
+                
+                if text.text_index == 3 and addedBoard == False:
+                    ouiji.add(Ouija(((display_width / 2) - 300, display_height - 550)))
+                    text.shift = display_height / 6
+                    text.update_stuff()
+                    addedBoard = True
+                    ouijiCurse =  True
 
-                darkness = pumpkinsToGrow
+                if text.text_index == 4:
 
-            if text.text_index == 3:
-                ouijiCurse = True
-                ouiji.add(Ouija(((display_width / 2) - 300, display_height - 550)))
+                    if (random.randint(1, 500000) > ouijaGap):
+                        ouijaGap = 500000
+                        ouijiCurse = not ouijiCurse
+
                 
     def start_game(self):
         self.game_loop()

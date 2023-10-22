@@ -28,6 +28,7 @@ class Text:
         self.text_index = 0
         self.network = network
         self.room_code = room_code
+        self.shift = 0
 
         self.update_stuff()
 
@@ -36,6 +37,7 @@ class Text:
         self.baseline = self.text_surf_rect.y
         self.text_surf = pygame.Surface(self.text_surf_rect.size)
         self.text_surf_rect.center = self.gameDisplay.get_rect().center
+        self.text_surf_rect.center = (self.text_surf_rect.center[0], self.text_surf_rect.center[1] - self.shift)
         self.metrics = self.font.get_metrics(self.current_text())
 
     def current_text(self) -> str:
