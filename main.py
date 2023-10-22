@@ -23,8 +23,6 @@ ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
 pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE|pygame.DOUBLEBUF)
 
-
-
 class Game:
     def __init__(self) -> None:
         self.gameDisplay = gameDisplay
@@ -57,9 +55,8 @@ class Game:
         gameExit = False
 
         ghostGap = 500
-        pumpGap = 50
+        pumpGap = 100000
         darkness = 0
-        pumpFlag = True
         
         while not gameExit:
 
@@ -92,7 +89,7 @@ class Game:
                     i += metric[Text.M_ADV_X]
                 
                 self.gameDisplay.blit(text.text_surf, text.text_surf_rect)
-                pygame.display.flip()
+
 
                 finishedGhosts = []
 
@@ -102,6 +99,11 @@ class Game:
 
                 for ghost in finishedGhosts:
                     ghosts.remove(ghost)
+
+                for ghost in ghosts:
+                    self.gameDisplay.blit(ghost.surf, ghost.rect)
+
+                pygame.display.flip()
 
             else:
 
@@ -131,17 +133,47 @@ class Game:
             clock.tick(60)
             ghostGap = ghostGap - 1
             pumpGap = pumpGap - 1
-            if ghostGap == 0:
-                ghostGap = 100
-                newGhost = Ghost((0, 250), [False, True, True, False], 10, 0)
-                ghosts.add(newGhost)
+            if ghostGap <= random.randint(1, 500):
+                ghostGap = 500
+                directionValue = random.randint(1, 8)
+                directions = []
+                start = ()
+                if directionValue == 1:
+                    directions = [True, False, False, False]
+                    start = (display_width, random.randint(200,400))
+                elif directionValue == 2:
+                    directions = [False, True, False, False]
+                    start = (0, random.randint(200, 400))
+                elif directionValue == 3:
+                    directions = [False, False, True, False]
+                    start = (random.randint(250, 500), display_height)
+                elif directionValue == 4:
+                    directions = [False, False, False, True]
+                    start = (random.randint(250, 500), 0)
+                elif directionValue == 5:
+                    directions = [True, False, True, False]
+                    start = (display_width, display_height)
+                elif directionValue == 6:
+                    directions = [True, False, False, True]
+                    start= (display_width, 0)
+                elif directionValue == 7:
+                    directions = [False, True, True, False]
+                    start = (0, display_height)
+                else:
+                    directions = [False, True, False, True]
+                    start = (0, 0)
 
-            if darkness == 0 and pumpFlag == True and pumpGap == 0:
-                pumpFlag = False
+                ghosts.add(Ghost(start ,directions, random.randint(1, 10)))
 
-                newPumpkin = Pumpkin((25, 250), 200)
-                pumpkins.add(newPumpkin)
-                darkness = darkness + 1
+            if pumpGap <= random.randint(1, 100000) and darkness == 0:
+                pumpGap = 100000
+                pumpkinsToGrow = random.randint(3, 10)
+                pumpkinSize = random.randint(300, 500)
+
+                for i in range(0, pumpkinsToGrow):
+                    pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
+
+                darkness = pumpkinsToGrow
                 
     def start_game(self):
         self.game_loop()
