@@ -47,20 +47,26 @@ class GameServer(object):
                                         self.send(f"mc{room_code}", addr)
                                     elif msg_type == "j" and addr in self.clients:
                                         room_code = int(msg[2:])
+                                        print(f"Valid room code: {room_code in self.rooms.keys()}")
+                                        print(f"Room has space: {len(self.rooms[room_code]) < 2}")
                                         if room_code in self.rooms.keys() and len(self.rooms[room_code]) < 2:
                                             self.rooms[room_code].append(addr)
                                             self.send(f"mj{room_code}", addr)
+                                            print(f"Sent mj{room_code}")
                                         else:
                                             self.send(f"me{room_code}", addr)
+                                            print(f"Sent me{room_code}")
                                     elif msg_type == "s" and addr in self.clients:
                                         room_code = int(msg[2:])
                                         for player in self.rooms[room_code]:
                                             self.send(f"ms{room_code}", player)
+                                            print(f"Sent ms{room_code}")
                                     elif msg_type == "n" and addr in self.clients:
                                         room_code = int(msg[2:])
                                         for player in self.rooms[room_code]:
                                             if player != addr:
                                                 self.send(f"mn", player)
+                                                print(f"Sent mn")
                             elif cmd == "d":  # Player Quitting
                                 if addr in self.clients:
                                     del self.clients[addr]
