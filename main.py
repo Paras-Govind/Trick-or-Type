@@ -80,7 +80,7 @@ class Game:
                         if event.key == pygame.K_ESCAPE:
                             return
                         if event.unicode == text.current_letter():
-                            text.next_letter()
+                            reached_end = text.next_letter()
         
                 self.gameDisplay.fill(background_color)
                 text.text_surf.fill(background_color)
