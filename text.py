@@ -41,21 +41,20 @@ class Text:
     def current_text(self) -> str:
         return self.texts[self.text_index]
 
-    def next_text(self) -> None:
+    def next_text(self) -> bool:
         self.letter_index = 0
         self.text_index += 1
         if self.text_index >= len(self.texts):
-            mixer.music.load("assets/audio/scream.mp3")
-            mixer.music.set_volume(2)
-            mixer.music.play() 
             self.text_index = 0
+            return True
         self.update_stuff()
-
+        return False
     def current_letter(self) -> None:
         return self.texts[self.text_index][self.letter_index].lower()
 
-    def next_letter(self) -> None:
+    def next_letter(self) -> bool:
         self.letter_index += 1
         if self.letter_index >= len(self.current_text()):
             self.network.send(f"mn{self.room_code}")
-            self.next_text()
+            return self.next_text()
+        return False

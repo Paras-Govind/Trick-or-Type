@@ -6,14 +6,14 @@ import random
 from pygame import mixer 
 from networking import Network
 
+mixer.pre_init()
+mixer.init()
+
 from common import *
 from text import Text, request_text
 from spooks import *
 
-mixer.init()
-mixer.music.load("assets/audio/music.mp3")
-mixer.music.set_volume(0.7) 
-mixer.music.play() 
+pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/music.mp3"))
 
 background_color = "#3F3F3F"
 
@@ -23,6 +23,8 @@ ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
 pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE|pygame.DOUBLEBUF)
 
+scare = pygame.image.load("assets/images/jumpscare.jpg")
+scare = pygame.transform.scale(scare, (display_width, display_height))
 
 
 class Game:
@@ -60,7 +62,7 @@ class Game:
         pumpGap = 50
         darkness = 0
         pumpFlag = True
-        
+        reached_end = False
         while not gameExit:
 
             if darkness == 0:
@@ -74,7 +76,7 @@ class Game:
                         if event.key == pygame.K_ESCAPE:
                             return
                         if event.unicode == text.current_letter():
-                            text.next_letter()
+                            reached_end = text.next_letter()
         
                 self.gameDisplay.fill(background_color)
                 text.text_surf.fill(background_color)
@@ -92,7 +94,12 @@ class Game:
                     i += metric[Text.M_ADV_X]
                 
                 self.gameDisplay.blit(text.text_surf, text.text_surf_rect)
-                pygame.display.flip()
+                
+                if reached_end:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/audio/music.mp3"))
+                    gameDisplay.blit(scare,(0,0))
+
+                pygame.display.update()
 
                 finishedGhosts = []
 
