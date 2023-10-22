@@ -65,7 +65,7 @@ class Game:
         darkness = 0
         addedBoard = False
         ouijiCurse = False
-        ouijaGap = 500000
+        ouijaGap = 100000
         cursedLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
         reached_end = False
@@ -183,15 +183,6 @@ class Game:
 
                 pygame.display.flip()
 
-                if reached_end:
-                    time.sleep(2)
-                    pygame.mixer.Channel(0).stop()
-                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
-                    gameDisplay.blit(scare,(0,0))
-                    gameExit = True
-
-                pygame.display.flip()
-
             else:
 
                 for event in pygame.event.get():
@@ -276,8 +267,8 @@ class Game:
 
                 if text.text_index == 4:
 
-                    if (random.randint(1, 500000) > ouijaGap):
-                        ouijaGap = 500000
+                    if (random.randint(1, 100000) > ouijaGap):
+                        ouijaGap = 100000
                         ouijiCurse = not ouijiCurse
 
     

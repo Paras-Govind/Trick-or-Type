@@ -4,10 +4,10 @@ from pygame import mixer
 def request_text():
     return [
     "On a chilling Halloween night beneath the eerie",
-    # "moonlight friends gathered by a wickedly grinning",
-    # "pumpkin. They exchanged terrifying tales of ghosts",
-    # "sending shivers down their spines. Suddenly a rustle",
-    # "in the bushes made them jump. But it was not a",
+    "moonlight friends gathered by a wickedly grinning",
+    "pumpkin. They exchanged terrifying tales of ghosts",
+    "sending shivers down their spines.",
+    "Suddenly a rustle in the bushes made them jump.",
     # "ghost it was their mischievous zombie friend clad",
     # "in tattered clothes. The night was filled with",
     # "laughter scares and the warmth of pumpkin-spiced",
