@@ -67,7 +67,7 @@ class Game:
         cursedLetters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
         reached_end = False
-        
+        won = False
         while not gameExit:
             self.network.check_network()
             if darkness == 0:
@@ -75,14 +75,22 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         return
-                    if event.type == self.network.next_phrase_event:
+                    elif event.type == self.network.win_event:
+                        won = True
+                        gameExit = True
+                        break
+                    elif  event.type == self.network.lose_event:
+                        gameExit = True
+                        break
+                    elif event.type == self.network.next_phrase_event:
                         text.next_text()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             return
                         if event.unicode == text.current_letter():
                             reached_end = text.next_letter()
-        
+                if gameExit:
+                    break
                 self.gameDisplay.fill(background_color)
                 text.text_surf.fill(background_color)
                 
@@ -113,12 +121,6 @@ class Game:
                 for ghost in ghosts:
                     self.gameDisplay.blit(ghost.surf, ghost.rect)
                     
-                if reached_end:
-                    time.sleep(2)
-                    pygame.mixer.Channel(0).stop()
-                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
-                    gameDisplay.blit(scare,(0,0))
-                    gameExit = True
                     
 
                 pygame.display.flip()
@@ -204,51 +206,68 @@ class Game:
             
             pygame.display.update()
             clock.tick(60)
+            
             if darkness == 0:
                 ghostGap = ghostGap - 1
                 pumpGap = pumpGap - 1
-            if ghostGap <= random.randint(1, 500) and darkness == 0:
-                ghostGap = 500
-                directionValue = random.randint(1, 8)
-                directions = []
-                start = ()
-                if directionValue == 1:
-                    directions = [True, False, False, False]
-                    start = (display_width, random.randint(200,400))
-                elif directionValue == 2:
-                    directions = [False, True, False, False]
-                    start = (0, random.randint(200, 400))
-                elif directionValue == 3:
-                    directions = [False, False, True, False]
-                    start = (random.randint(250, 500), display_height)
-                elif directionValue == 4:
-                    directions = [False, False, False, True]
-                    start = (random.randint(250, 500), 0)
-                elif directionValue == 5:
-                    directions = [True, False, True, False]
-                    start = (display_width, display_height)
-                elif directionValue == 6:
-                    directions = [True, False, False, True]
-                    start= (display_width, 0)
-                elif directionValue == 7:
-                    directions = [False, True, True, False]
-                    start = (0, display_height)
-                else:
-                    directions = [False, True, False, True]
-                    start = (0, 0)
+            if text.text_index > 0:
+                if ghostGap <= random.randint(1, 500) and darkness == 0:
+                    ghostGap = 500
+                    directionValue = random.randint(1, 8)
+                    directions = []
+                    start = ()
+                    if directionValue == 1:
+                        directions = [True, False, False, False]
+                        start = (display_width, random.randint(200,400))
+                    elif directionValue == 2:
+                        directions = [False, True, False, False]
+                        start = (0, random.randint(200, 400))
+                    elif directionValue == 3:
+                        directions = [False, False, True, False]
+                        start = (random.randint(250, 500), display_height)
+                    elif directionValue == 4:
+                        directions = [False, False, False, True]
+                        start = (random.randint(250, 500), 0)
+                    elif directionValue == 5:
+                        directions = [True, False, True, False]
+                        start = (display_width, display_height)
+                    elif directionValue == 6:
+                        directions = [True, False, False, True]
+                        start= (display_width, 0)
+                    elif directionValue == 7:
+                        directions = [False, True, True, False]
+                        start = (0, display_height)
+                    else:
+                        directions = [False, True, False, True]
+                        start = (0, 0)
 
-                ghosts.add(Ghost(start ,directions, random.randint(1, 10)))
+                    ghosts.add(Ghost(start ,directions, random.randint(1, 10)))
+            
+            if text.text_index > 1:
+                if pumpGap <= random.randint(1, 100000) and darkness == 0:
+                    pumpGap = 100000
+                    pumpkinsToGrow = random.randint(3, 10)
+                    pumpkinSize = random.randint(300, 500)
 
-            if pumpGap <= random.randint(1, 100000) and darkness == 0:
-                pumpGap = 100000
-                pumpkinsToGrow = random.randint(3, 10)
-                pumpkinSize = random.randint(300, 500)
-
-                for i in range(0, pumpkinsToGrow):
-                    pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
+                    for i in range(0, pumpkinsToGrow):
+                        pumpkins.add(Pumpkin((random.randint(0, display_width-pumpkinSize), random.randint(0, display_height-pumpkinSize)), pumpkinSize))
 
                 darkness = pumpkinsToGrow
         
+    
+        
+        self.gameDisplay.fill(white)
+        if not won:
+            time.sleep(2)
+            pygame.mixer.Channel(0).stop()
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
+            gameDisplay.blit(scare,(0,0))
+            time.sleep(4)
+        self.gameDisplay.fill(white)
+        self.message_display(f"{'You Won!' if won else 'You Lost!'}")
+        pygame.display.update()
+        time.sleep(4)
+        return
                 
     def start_game(self):
         self.game_loop()
@@ -301,6 +320,7 @@ class Game:
                         return
                 elif event.type == self.network.start_event:
                     self.start_game()
+                    return
                 
             self.gameDisplay.fill(white)
             self.message_display(f"Room code: {self.code}. Waiting for host...")
