@@ -62,3 +62,27 @@ class Ouija(pygame.sprite.Sprite):
         self.letters = [[91, 285, 31, 28], [132, 270, 22, 24], [156, 254, 28, 27], [190, 245, 26, 26], [217, 237, 33, 28], [251, 229, 24, 32], [281, 231, 26, 33], [316, 230, 30, 34], [353, 232, 10, 35], [373, 236, 18, 34], [403, 246, 23, 38], [435, 257, 20, 38], [465, 267, 33, 48], [95, 345, 31, 31], [127, 327, 29, 28], [157, 313, 23, 26], [183, 297, 29, 26], [213, 288, 35, 28], [249, 278, 34, 32], [288, 276, 17, 31], [312, 279, 25, 31], [342, 281, 25, 34], [383, 293, 20, 35], [419, 306, 20, 37], [453, 320, 10, 32], [472, 341, 29, 35]]
         self.letterValues = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 
+        self.buttons = []
+        index = 0
+
+        for letter in self.letters:
+
+            self.buttons.append(OuijaButton(letter, self.rect.left, self.rect.top, self.letterValues[index]))
+            index = index + 1
+
+    def checkInput(self, pos):
+        for button in self.buttons:
+            result = button.checkForInput(pos)
+            if result != "+":
+                return result
+        return "+"
+
+class OuijaButton():
+    def __init__(self, data, relativeLeft, relativeTop, letter):
+        self.letter = letter
+        self.rect = pygame.Rect(relativeLeft + data[0], relativeTop + data[1], data[2], data[3])
+
+    def checkForInput(self, position):
+        if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+            return self.letter
+        return "+"
