@@ -2,7 +2,7 @@ import pygame
 
 class Ghost(pygame.sprite.Sprite):
     def __init__(self, start, directions, speed, zoomRate):
-        size = 500
+        size = 150
         super(Ghost, self).__init__()
         image = pygame.image.load("assets/ghost.png").convert_alpha()
         transparency = 128
