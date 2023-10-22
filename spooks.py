@@ -4,7 +4,7 @@ background_color = "#3F3F3F"
 
 class Ghost(pygame.sprite.Sprite):
     def __init__(self, start, directions, speed, zoomRate):
-        size = 150
+        size = 200
         super(Ghost, self).__init__()
         image = pygame.image.load("assets/ghost.png").convert_alpha()
         transparency = 200

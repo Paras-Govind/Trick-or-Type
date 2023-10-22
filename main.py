@@ -14,7 +14,7 @@ pygame.display.set_caption('Trick or Type')
 
 ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
-pygame.display.set_mode((pygame.display.get_window_size()[0], pygame.display.get_window_size()[1]), pygame.RESIZABLE|pygame.DOUBLEBUF)
+pygame.display.set_mode((display_width, display_height), pygame.RESIZABLE|pygame.DOUBLEBUF)
 
 
 
