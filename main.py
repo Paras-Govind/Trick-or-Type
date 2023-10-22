@@ -96,7 +96,8 @@ class Game:
                 self.gameDisplay.blit(text.text_surf, text.text_surf_rect)
                 
                 if reached_end:
-                    pygame.mixer.Channel(1).play(pygame.mixer.Sound("assets/audio/music.mp3"))
+                    pygame.mixer.Channel(0).stop()
+                    pygame.mixer.Channel(0).play(pygame.mixer.Sound("assets/audio/scream.mp3"))
                     gameDisplay.blit(scare,(0,0))
 
                 pygame.display.update()
