@@ -13,16 +13,18 @@ pygame.display.set_caption('Trick or Type')
 ghosts = pygame.sprite.Group()
 pumpkins = pygame.sprite.Group()
 
+code = ""
 
-def game_loop():
+def game_loop(code: str):
     text = Text(gameDisplay, request_text())
+    print(code)
     gameExit = False
 
     ghostGap = 100
     pumpGap = 50
     darkness = 0
     pumpFlag = True
- 
+    
     while not gameExit:
 
         if darkness == 0:
@@ -101,18 +103,32 @@ def game_loop():
             pumpkins.add(newPumpkin)
             darkness = darkness + 1
 
-        
+            
 menu = pygame_menu.Menu(width=display_width, height=display_height,
                     theme=pygame_menu.themes.THEME_DARK,
                     title='Welcome')
 
+
+create_room_menu = pygame_menu.Menu(width=display_width, height=display_height,
+                    theme=pygame_menu.themes.THEME_DARK,
+                    title='Room')
+
+create_room_menu.add.button("Start", game_loop, code)
+
+def create_room_loop():
+    code = "12345"
+    # do something with code
+    create_room_menu.mainloop(gameDisplay)
+
 username_box = menu.add.text_input(title="Username: ")
-menu.add.button("Create room", game_loop)
+menu.add.button("Create room", create_room_loop)
 
 code_box = menu.add.text_input(title="Room code: ")
 menu.add.button("Join room", game_loop)
 menu.add.button("Quit", pygame_menu.events.EXIT)
 menu.center_content()
+
+
 
 menu.mainloop(gameDisplay)
 pygame.quit()

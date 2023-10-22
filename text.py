@@ -3,12 +3,16 @@ import pygame
 
 def request_text():
     return [
-        "On a chilling Halloween night beneath the eerie moonlight friends gathered by a wickedly grinning pumpkin",
-        "They exchanged terrifying tales of ghosts sending shivers down their spines",
-        "Suddenly a rustle in the bushes made them jump",
-        "But it was not a ghost it was their mischievous zombie friend clad in tattered clothes",
-        "The night was filled with laughter scares and the warmth of pumpkin-spiced treats as they celebrated Halloween in all its scary glory",
-    ]
+    "On a chilling Halloween night beneath the eerie",
+    "moonlight friends gathered by a wickedly grinning",
+    "pumpkin. They exchanged terrifying tales of ghosts",
+    "sending shivers down their spines. Suddenly a rustle",
+    "in the bushes made them jump. But it was not a",
+    "ghost it was their mischievous zombie friend clad",
+    "in tattered clothes. The night was filled with",
+    "laughter scares and the warmth of pumpkin-spiced",
+    "treats as they celebrated Halloween in all its scary glory."
+]
 
 
 class Text:
