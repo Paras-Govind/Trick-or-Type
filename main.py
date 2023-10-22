@@ -82,7 +82,7 @@ class Game:
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             return
-                        if event.unicode == text.current_letter():
+                        if event.unicode.lower() == text.current_letter():
                             reached_end = text.next_letter()
         
                 self.gameDisplay.fill(background_color)
@@ -137,7 +137,7 @@ class Game:
                             return
                         if event.unicode in cursedLetters:
                             pass
-                        elif event.unicode == text.current_letter():
+                        elif event.unicode.lower() == text.current_letter():
                             reached_end = text.next_letter()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         mousePos = pygame.mouse.get_pos()
