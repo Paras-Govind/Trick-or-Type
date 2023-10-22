@@ -4,15 +4,21 @@ import pygame.freetype
 
 from common import *
 from text import Text
+from spooks import *
 
 background_color = "#3F3F3F"
 
 pygame.display.set_caption('Trick or Type')
 
+ghosts = pygame.sprite.Group()
+
 
 def game_loop():
     text = Text(gameDisplay, ['This', 'This is another longer sentence'])
     gameExit = False
+
+    ghostGap = 100
+    darkness = 0
  
     while not gameExit:
         for event in pygame.event.get():
@@ -39,9 +45,23 @@ def game_loop():
           
         gameDisplay.blit(text.text_surf, text.text_surf_rect)
         pygame.display.flip()
+
+        finishedGhosts = []
+
+        for ghost in ghosts:
+            if ghost.update(pygame.display.get_window_size()[0],pygame.display.get_window_size()[1],gameDisplay) == True:
+                finishedGhosts.append(ghost)
+
+        for ghost in finishedGhosts:
+            ghosts.remove(ghost)
         
         pygame.display.update()
         clock.tick(60)
+        ghostGap = ghostGap - 1
+        if ghostGap == 0:
+            ghostGap = 100
+            newGhost = Ghost((0, 250), [False, True, False, False], 10, 0)
+            ghosts.add(newGhost)
         
 menu = pygame_menu.Menu(width=display_width, height=display_height,
                     theme=pygame_menu.themes.THEME_DARK,
